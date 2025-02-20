@@ -5,6 +5,7 @@ import {
   Get,
   NotFoundException,
   Param,
+  ParseIntPipe,
   Post,
   Put,
 } from '@nestjs/common';
@@ -14,7 +15,7 @@ import { UpdateDishDTO } from './dto/update-dish.dto';
 
 @Controller('dishes')
 export class DishesController {
-  private trackId = 0;
+  private trackId = 1;
   private dishes: Dish[] = [
     {
       id: this.trackId++,
@@ -54,14 +55,14 @@ export class DishesController {
   }
 
   @Delete(':id')
-  deleteOne(@Param('id') id: string) {
-    const dishToDelete = this.dishes.find((d) => d.id === Number(id));
+  deleteOne(@Param('id', ParseIntPipe) id: number) {
+    const dishToDelete = this.dishes.find((d) => d.id === id);
 
     if (!dishToDelete) {
       throw new NotFoundException(`Dish id: ${id} not found`);
     }
 
-    this.dishes = this.dishes.filter((d) => d.id !== Number(id));
+    this.dishes = this.dishes.filter((d) => d.id !== id);
 
     return {
       message: 'Dish deleted',
