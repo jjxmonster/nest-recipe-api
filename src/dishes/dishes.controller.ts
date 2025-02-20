@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  NotFoundException,
   Param,
   Post,
   Put,
@@ -43,15 +44,23 @@ export class DishesController {
   updateOne(@Body() dish: UpdateDishDTO) {
     const dishToUpdate = this.dishes.find((d) => d.id === dish.id);
 
-    if (dishToUpdate) {
-      Object.assign(dishToUpdate, dish);
+    if (!dishToUpdate) {
+      throw new NotFoundException(`Dish id: ${dish.id} not found`);
     }
+
+    Object.assign(dishToUpdate, dish);
 
     return dishToUpdate;
   }
 
   @Delete(':id')
   deleteOne(@Param('id') id: string) {
+    const dishToDelete = this.dishes.find((d) => d.id === Number(id));
+
+    if (!dishToDelete) {
+      throw new NotFoundException(`Dish id: ${id} not found`);
+    }
+
     this.dishes = this.dishes.filter((d) => d.id !== Number(id));
 
     return {

@@ -7,7 +7,12 @@ export class UpdateDishDTO {
   @IsString()
   name: string;
 
-  @IsNumber()
+  @IsNumber(
+    {},
+    {
+      message: 'Servings must be a number',
+    },
+  )
   servings: number;
 
   @IsOptional()
