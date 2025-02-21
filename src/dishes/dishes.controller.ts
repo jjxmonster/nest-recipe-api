@@ -23,7 +23,12 @@ export class DishesController {
 
   @Get()
   getDishes() {
-    return this.dishService.findAll();
+    return this.dishService.getAll();
+  }
+
+  @Get(':id')
+  getOneById(@Param('id', ParseIntPipe) id: number) {
+    return this.dishService.getOneById(id);
   }
 
   @Put()
