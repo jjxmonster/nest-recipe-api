@@ -25,7 +25,7 @@ export class DishService {
     return newDish;
   }
 
-  findAll() {
+  getAll(): readonly Dish[] {
     return this.dishes;
   }
 

@@ -3,58 +3,44 @@ import {
   Controller,
   Delete,
   Get,
-  NotFoundException,
   Param,
   ParseIntPipe,
   Post,
   Put,
 } from '@nestjs/common';
-import { Product } from './Product';
 import { CreateProductDTO } from './dto/create-product.dto';
 import { UpdateProductDTO } from './dto/update-product.dto';
+import { ProductService } from './product.service';
+import { DishService } from 'src/dishes/dish.service';
 
 @Controller('products')
 export class ProductsController {
-  private trackId = 1;
-  private products: Product[] = [];
+  private productService = new ProductService();
+  constructor(private readonly dishService: DishService) {}
 
   @Post()
   createOne(@Body() product: CreateProductDTO) {
-    const newProduct: Product = {
-      id: this.trackId++,
-      ...product,
-    };
-
-    this.products.push(newProduct);
-    return newProduct;
+    this.dishService.getOneById(product.dishId);
+    return this.productService.create(product);
   }
 
   @Get()
-  getP() {
-    return this.products;
+  getAll() {
+    return this.productService.getAll();
+  }
+
+  @Get(':id')
+  getOneById(@Param('id', ParseIntPipe) id: number) {
+    return this.productService.getOneById(id);
   }
 
   @Put()
   updateOne(@Body() product: UpdateProductDTO) {
-    const productToUpdate = this.products.find((p) => p.id === product.id);
-
-    if (!productToUpdate) {
-      throw new NotFoundException(`Product id: ${product.id} not found`);
-    }
-
-    Object.assign(productToUpdate, product);
-    return productToUpdate;
+    return this.productService.update(product);
   }
 
   @Delete(':id')
   deleteOne(@Param('id', ParseIntPipe) id: number) {
-    const productToDelete = this.products.find((p) => p.id === id);
-
-    if (!productToDelete) {
-      throw new NotFoundException(`Product id: ${id} not found`);
-    }
-
-    this.products = this.products.filter((p) => p.id !== id);
-    return productToDelete;
+    return this.productService.delete(id);
   }
 }
