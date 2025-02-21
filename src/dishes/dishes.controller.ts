@@ -14,7 +14,11 @@ import { DishService } from './dish.service';
 
 @Controller('dishes')
 export class DishesController {
-  constructor(private readonly dishService: DishService) {}
+  private dishService: DishService;
+
+  constructor(dishService: DishService) {
+    this.dishService = dishService;
+  }
 
   @Post()
   createOne(@Body() dish: CreateDishDTO) {
