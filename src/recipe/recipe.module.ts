@@ -5,9 +5,10 @@ import { DishService } from './dishes/dish.service';
 import { ProductService } from './products/product.service';
 import { Product } from './products/Product';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Dish } from './dishes/Dish';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Product])],
+  imports: [TypeOrmModule.forFeature([Product, Dish])],
   controllers: [DishesController, ProductsController],
   providers: [DishService, ProductService],
 })

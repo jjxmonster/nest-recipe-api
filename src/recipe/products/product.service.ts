@@ -11,33 +11,27 @@ import { DishService } from 'src/recipe/dishes/dish.service';
 
 @Injectable()
 export class ProductService {
-  private trackId = 1;
-  private products: Product[] = [];
-
   constructor(
     @Inject(forwardRef(() => DishService)) private dishService: DishService,
   ) {}
 
-  create(product: CreateProductDTO) {
-    const newProduct: Product = {
-      id: this.trackId++,
-      ...product,
-    };
+  create(product: CreateProductDTO): Promise<Product> {
+    const newProduct = new Product();
+    Object.assign(newProduct, product);
     this.dishService.getOneById(product.dishId);
-    this.products.push(newProduct);
-    return newProduct;
+    return newProduct.save();
   }
 
-  getAll(): readonly Product[] {
-    return this.products;
+  getAll(): Promise<Product[]> {
+    return Product.find();
   }
 
-  getAllForDishId(dishId: number) {
-    return this.products.filter((p) => p.dishId === dishId);
-  }
+  // getAllForDishId(dishId: number): Promise<Product[]> {
+  //   return Product.findBy({ dishId });
+  // }
 
-  getOneById(id: number) {
-    const product = this.products.find((p) => p.id === id);
+  async getOneById(id: number): Promise<Product> {
+    const product = await Product.findOneBy({ id });
 
     if (!product) {
       throw new NotFoundException(`Product id: ${id} not found`);
@@ -46,15 +40,14 @@ export class ProductService {
     return product;
   }
 
-  update(product: UpdateProductDTO) {
-    const productToUpdate = this.getOneById(product.id);
+  async update(product: UpdateProductDTO): Promise<Product> {
+    const productToUpdate = await this.getOneById(product.id);
     Object.assign(productToUpdate, product);
-    return productToUpdate;
+    return productToUpdate.save();
   }
 
-  delete(id: number) {
-    this.getOneById(id);
-    this.products = this.products.filter((p) => p.id !== id);
-    return { id };
+  async delete(id: number): Promise<Product> {
+    const productToDelete = await this.getOneById(id);
+    return productToDelete.remove();
   }
 }
