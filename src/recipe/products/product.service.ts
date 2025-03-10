@@ -4,7 +4,7 @@ import {
   NotFoundException,
   forwardRef,
 } from '@nestjs/common';
-import { Product } from './Product';
+import { Product } from './product.entity';
 import { CreateProductDTO } from './dto/create-product.dto';
 import { UpdateProductDTO } from './dto/update-product.dto';
 import { DishService } from 'src/recipe/dishes/dish.service';
@@ -15,10 +15,10 @@ export class ProductService {
     @Inject(forwardRef(() => DishService)) private dishService: DishService,
   ) {}
 
-  create(product: CreateProductDTO): Promise<Product> {
+  async create(product: CreateProductDTO): Promise<Product> {
     const newProduct = new Product();
     Object.assign(newProduct, product);
-    this.dishService.getOneById(product.dishId);
+    newProduct.dish = await this.dishService.getOneById(product.dishId);
     return newProduct.save();
   }
 

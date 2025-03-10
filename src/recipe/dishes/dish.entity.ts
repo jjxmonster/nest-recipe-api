@@ -1,5 +1,11 @@
-import { Product } from 'src/recipe/products/Product';
-import { Entity, Column, PrimaryGeneratedColumn, BaseEntity } from 'typeorm';
+import { Product } from 'src/recipe/products/product.entity';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  BaseEntity,
+  OneToMany,
+} from 'typeorm';
 
 @Entity()
 export class Dish extends BaseEntity {
@@ -15,5 +21,6 @@ export class Dish extends BaseEntity {
   @Column({ type: 'decimal' })
   servings: number;
 
+  @OneToMany(() => Product, (product) => product.dish)
   products: Product[];
 }

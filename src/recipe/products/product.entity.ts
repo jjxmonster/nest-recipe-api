@@ -1,4 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn, BaseEntity } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  BaseEntity,
+  ManyToOne,
+} from 'typeorm';
+import { Dish } from '../dishes/dish.entity';
 
 @Entity()
 export class Product extends BaseEntity {
@@ -14,8 +21,10 @@ export class Product extends BaseEntity {
   @Column({ type: 'decimal' })
   amount: number;
 
-  @Column({ type: 'int' }) // TODO: change to ForeignKey
-  dishId: number;
+  @ManyToOne(() => Dish, (dish) => dish.products, {
+    onDelete: 'CASCADE',
+  })
+  dish: Dish;
 }
 
 export type ProductUnit = 'kg' | 'g' | 'tsp' | 'sp' | 'pinch' | 'ml' | 'l';

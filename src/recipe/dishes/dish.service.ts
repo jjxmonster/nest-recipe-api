@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Dish } from './Dish';
+import { Dish } from './dish.entity';
 import { CreateDishDTO } from './dto/create-dish.dto';
 import { UpdateDishDTO } from './dto/update-dish.dto';
 
@@ -12,11 +12,16 @@ export class DishService {
   }
 
   getAll(): Promise<Dish[]> {
-    return Dish.find();
+    return Dish.find({
+      relations: ['products'],
+    });
   }
 
   async getOneById(id: number): Promise<Dish> {
-    const dish = await Dish.findOneBy({ id });
+    const dish = await Dish.findOne({
+      where: { id },
+      relations: ['products'],
+    });
 
     if (!dish) {
       throw new NotFoundException(`Dish id: ${id} not found`);
