@@ -1,25 +1,39 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  NotFoundException,
+  forwardRef,
+} from '@nestjs/common';
 import { Product } from './Product';
 import { CreateProductDTO } from './dto/create-product.dto';
 import { UpdateProductDTO } from './dto/update-product.dto';
+import { DishService } from 'src/recipe/dishes/dish.service';
 
 @Injectable()
 export class ProductService {
   private trackId = 1;
   private products: Product[] = [];
 
+  constructor(
+    @Inject(forwardRef(() => DishService)) private dishService: DishService,
+  ) {}
+
   create(product: CreateProductDTO) {
     const newProduct: Product = {
       id: this.trackId++,
       ...product,
     };
-
+    this.dishService.getOneById(product.dishId);
     this.products.push(newProduct);
     return newProduct;
   }
 
   getAll(): readonly Product[] {
     return this.products;
+  }
+
+  getAllForDishId(dishId: number) {
+    return this.products.filter((p) => p.dishId === dishId);
   }
 
   getOneById(id: number) {
