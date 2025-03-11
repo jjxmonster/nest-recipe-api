@@ -1,59 +1,47 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Dish } from './Dish';
 import { CreateDishDTO } from './dto/create-dish.dto';
 import { UpdateDishDTO } from './dto/update-dish.dto';
-import { ProductService } from 'src/recipe/products/product.service';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Dish } from './dish.entity';
 
 @Injectable()
 export class DishService {
-  private trackId = 1;
-  private dishes: Dish[] = [
-    {
-      id: this.trackId++,
-      name: 'Pizza',
-      description: 'A delicious pizza',
-      servings: 4,
-      products: [],
-    },
-  ];
+  constructor(
+    @InjectRepository(Dish) private dishRepository: Repository<Dish>,
+  ) {}
 
-  constructor(private readonly productService: ProductService) {}
-
-  create(dish: CreateDishDTO) {
-    const newDish: Dish = {
-      id: this.trackId++,
-      products: [],
-      ...dish,
-    };
-
-    this.dishes.push(newDish);
-    return newDish;
+  create(dish: CreateDishDTO): Promise<Dish> {
+    return this.dishRepository.save(dish);
   }
 
-  getAll(): readonly Dish[] {
-    return this.dishes;
+  getAll(): Promise<Dish[]> {
+    return this.dishRepository.find({
+      relations: ['products'],
+    });
   }
 
-  getOneById(id: number) {
-    const dish = this.dishes.find((d) => d.id === id);
+  async getOneById(id: number): Promise<Dish> {
+    const dish = await this.dishRepository.findOne({
+      where: { id },
+      relations: ['products'],
+    });
 
     if (!dish) {
       throw new NotFoundException(`Dish id: ${id} not found`);
     }
-    dish.products = this.productService.getAllForDishId(id);
 
     return dish;
   }
 
-  update(dish: UpdateDishDTO) {
-    const dishToUpdate = this.getOneById(dish.id);
-    Object.assign(dishToUpdate, dish);
-    return dishToUpdate;
+  async update(dish: UpdateDishDTO) {
+    await this.getOneById(dish.id);
+
+    return this.dishRepository.update(dish.id, dish);
   }
 
-  delete(id: number) {
-    this.getOneById(id);
-    this.dishes = this.dishes.filter((d) => d.id !== id);
-    return { id };
+  async delete(id: number): Promise<Dish> {
+    const dishToDelete = await this.getOneById(id);
+    return this.dishRepository.remove(dishToDelete);
   }
 }

@@ -1,5 +1,5 @@
 import { IsNumber, IsString } from 'class-validator';
-import { ProductUnit } from '../Product';
+import { ProductUnit } from '../product.entity';
 
 export class UpdateProductDTO {
   @IsNumber()

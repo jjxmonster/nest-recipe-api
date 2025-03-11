@@ -1,43 +1,35 @@
-import {
-  Inject,
-  Injectable,
-  NotFoundException,
-  forwardRef,
-} from '@nestjs/common';
-import { Product } from './Product';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { Product } from './product.entity';
 import { CreateProductDTO } from './dto/create-product.dto';
 import { UpdateProductDTO } from './dto/update-product.dto';
 import { DishService } from 'src/recipe/dishes/dish.service';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class ProductService {
-  private trackId = 1;
-  private products: Product[] = [];
-
   constructor(
-    @Inject(forwardRef(() => DishService)) private dishService: DishService,
+    @InjectRepository(Product)
+    private productRepository: Repository<Product>,
+    private dishService: DishService,
   ) {}
 
-  create(product: CreateProductDTO) {
-    const newProduct: Product = {
-      id: this.trackId++,
-      ...product,
-    };
-    this.dishService.getOneById(product.dishId);
-    this.products.push(newProduct);
-    return newProduct;
+  async create(product: CreateProductDTO): Promise<Product> {
+    const newProduct = this.productRepository.create(product);
+    newProduct.dish = await this.dishService.getOneById(product.dishId);
+    return this.productRepository.save(product);
   }
 
-  getAll(): readonly Product[] {
-    return this.products;
+  getAll(): Promise<Product[]> {
+    return this.productRepository.find();
   }
 
-  getAllForDishId(dishId: number) {
-    return this.products.filter((p) => p.dishId === dishId);
-  }
+  // getAllForDishId(dishId: number): Promise<Product[]> {
+  //   return Product.findBy({ dishId });
+  // }
 
-  getOneById(id: number) {
-    const product = this.products.find((p) => p.id === id);
+  async getOneById(id: number): Promise<Product> {
+    const product = await this.productRepository.findOneBy({ id });
 
     if (!product) {
       throw new NotFoundException(`Product id: ${id} not found`);
@@ -46,15 +38,13 @@ export class ProductService {
     return product;
   }
 
-  update(product: UpdateProductDTO) {
-    const productToUpdate = this.getOneById(product.id);
-    Object.assign(productToUpdate, product);
-    return productToUpdate;
+  async update(product: UpdateProductDTO) {
+    await this.getOneById(product.id);
+    return this.productRepository.update(product.id, product);
   }
 
-  delete(id: number) {
-    this.getOneById(id);
-    this.products = this.products.filter((p) => p.id !== id);
-    return { id };
+  async delete(id: number): Promise<Product> {
+    const productToDelete = await this.getOneById(id);
+    return this.productRepository.remove(productToDelete);
   }
 }
