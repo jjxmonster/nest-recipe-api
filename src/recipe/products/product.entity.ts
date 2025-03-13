@@ -3,9 +3,9 @@ import {
   Column,
   PrimaryGeneratedColumn,
   BaseEntity,
-  ManyToOne,
+  OneToMany,
 } from 'typeorm';
-import { Dish } from '../dishes/dish.entity';
+import { Ingredient } from '../ingredients/ingredient.entity';
 
 @Entity()
 export class Product extends BaseEntity {
@@ -18,13 +18,10 @@ export class Product extends BaseEntity {
   @Column({ type: 'varchar' })
   unit: ProductUnit;
 
-  @Column({ type: 'decimal' })
-  amount: number;
-
-  @ManyToOne(() => Dish, (dish) => dish.products, {
+  @OneToMany(() => Ingredient, (ingredient) => ingredient.product, {
     onDelete: 'CASCADE',
   })
-  dish: Dish;
+  ingredients: Ingredient[];
 }
 
 export type ProductUnit = 'kg' | 'g' | 'tsp' | 'sp' | 'pinch' | 'ml' | 'l';
