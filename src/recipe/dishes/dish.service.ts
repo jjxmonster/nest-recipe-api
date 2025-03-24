@@ -16,15 +16,12 @@ export class DishService {
   }
 
   getAll(): Promise<Dish[]> {
-    return this.dishRepository.find({
-      relations: ['products'],
-    });
+    return this.dishRepository.find();
   }
 
   async getOneById(id: number): Promise<Dish> {
     const dish = await this.dishRepository.findOne({
       where: { id },
-      relations: ['products'],
     });
 
     if (!dish) {

@@ -3,18 +3,10 @@ import { AppController } from './app.controller';
 import { RecipeModule } from './recipe/recipe.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
+import { databaseConfig } from './config/database.config';
 
 @Module({
-  imports: [
-    RecipeModule,
-    TypeOrmModule.forRoot({
-      type: 'sqlite',
-      database: './database/my-db.sqlite3',
-      autoLoadEntities: true,
-      synchronize: true, //TODO: remove in production
-    }),
-    UserModule,
-  ],
+  imports: [RecipeModule, TypeOrmModule.forRoot(databaseConfig), UserModule],
   controllers: [AppController],
   providers: [],
 })

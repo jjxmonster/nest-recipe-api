@@ -1,4 +1,12 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { IngredientService } from './ingredient.service';
 
-@Controller('ingredient')
-export class IngredientController {}
+@Controller('ingredients')
+export class IngredientController {
+  constructor(private readonly ingredientService: IngredientService) {}
+
+  @Get(':id')
+  getOneById(@Param('id', ParseIntPipe) id: number) {
+    return this.ingredientService.getOneById(id);
+  }
+}
