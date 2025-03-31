@@ -3,16 +3,19 @@ import { AppController } from './app.controller';
 import { RecipeModule } from './recipe/recipe.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
+import { databaseConfig } from './config/database.config';
+import { ConfigModule } from '@nestjs/config';
+import { envValidationSchema } from './config/envValidationSchema.config';
 
 @Module({
   imports: [
-    RecipeModule,
-    TypeOrmModule.forRoot({
-      type: 'sqlite',
-      database: './database/my-db.sqlite3',
-      autoLoadEntities: true,
-      synchronize: true, //TODO: remove in production
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: [`.env.${process.env.NODE_ENV}`],
+      validationSchema: envValidationSchema,
     }),
+    RecipeModule,
+    TypeOrmModule.forRootAsync(databaseConfig),
     UserModule,
   ],
   controllers: [AppController],
