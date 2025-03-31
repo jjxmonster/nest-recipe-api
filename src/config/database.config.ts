@@ -1,8 +1,17 @@
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { ConfigService, ConfigModule } from '@nestjs/config';
+import { TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
 
-export const databaseConfig: TypeOrmModuleOptions = {
-  type: 'sqlite',
-  database: './database/my-db.sqlite3',
-  autoLoadEntities: true,
-  synchronize: true, //TODO: remove in production
+export const databaseConfig: TypeOrmModuleAsyncOptions = {
+  imports: [ConfigModule],
+  useFactory: (configService: ConfigService) => ({
+    type: 'postgres',
+    host: configService.get('DATABASE_HOST'),
+    port: parseInt(configService.get('DATABASE_PORT')),
+    username: configService.get('DATABASE_USERNAME'),
+    password: configService.get('DATABASE_PASSWORD'),
+    database: configService.get('DATABASE_NAME'),
+    autoLoadEntities: true,
+    synchronize: true,
+  }),
+  inject: [ConfigService],
 };

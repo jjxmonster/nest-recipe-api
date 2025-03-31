@@ -7,7 +7,6 @@ export class IngredientService {
   constructor(private readonly ingredientRepository: IngredientRepository) {}
 
   async getOneById(id: number): Promise<Ingredient> {
-    console.log('getOneById', id);
     return await this.ingredientRepository.findById(id);
   }
 }
