@@ -6,6 +6,7 @@ import { UserModule } from './user/user.module';
 import { databaseConfig } from './config/database.config';
 import { ConfigModule } from '@nestjs/config';
 import { envValidationSchema } from './config/envValidationSchema.config';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { envValidationSchema } from './config/envValidationSchema.config';
     RecipeModule,
     TypeOrmModule.forRootAsync(databaseConfig),
     UserModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [],
