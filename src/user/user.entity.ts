@@ -1,13 +1,6 @@
-import { Dish } from 'src/recipe/dishes/dish.entity';
-import {
-  BaseEntity,
-  Column,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
+@Entity('user')
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -20,7 +13,4 @@ export class User extends BaseEntity {
 
   @Column({ type: 'varchar' })
   password: string;
-
-  @OneToMany(() => Dish, (dish) => dish.user)
-  dishes: Dish[];
 }
