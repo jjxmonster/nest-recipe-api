@@ -20,7 +20,9 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "migrate": "NODE_ENV=development npx typeorm-ts-node-commonjs migration:run -d src/config/database.config.ts",
     "migrate:revert": "NODE_ENV=development npx typeorm-ts-node-commonjs migration:revert -d src/config/database.config.ts",
-    "migration:create": "NODE_ENV=development npx typeorm-ts-node-commonjs migration:create src/database/migrations/$npm_config_name"
+    "migration:create": "NODE_ENV=development npx typeorm-ts-node-commonjs migration:create src/database/migrations/$npm_config_name",
+    "seed:config": "NODE_ENV=development ts-node -r tsconfig-paths/register ./node_modules/@jorgebodega/typeorm-seeding/dist/commands/seed.command.js config -d src/config/database.config.ts",
+    "seed:run": "NODE_ENV=development ts-node -r tsconfig-paths/register scripts/run-seeders.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
@@ -35,10 +37,12 @@
     "pg": "^8.14.1",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
-    "sqlite3": "^5.1.7",
     "typeorm": "^0.3.21"
   },
   "devDependencies": {
+    "@faker-js/faker": "^9.8.0",
+    "@jorgebodega/typeorm-factory": "^2.1.0",
+    "@jorgebodega/typeorm-seeding": "^7.1.0",
     "@nestjs/cli": "^10.0.0",
     "@nestjs/schematics": "^10.0.0",
     "@nestjs/testing": "^10.0.0",
