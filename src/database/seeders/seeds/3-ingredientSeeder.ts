@@ -9,7 +9,6 @@ export default class IngredientSeeder implements Seeder {
   public async run(dataSource: DataSource): Promise<void> {
     const ingredientFactory = new IngredientFactory(dataSource);
 
-    // Pobierz wszystkie produkty i dania
     const products = (await dataSource
       .getRepository('Product')
       .find()) as Product[];
@@ -28,13 +27,11 @@ export default class IngredientSeeder implements Seeder {
 
     let ingredientsCreated = 0;
 
-    // Dla każdego dania dodaj 3-6 składników
     for (const dish of dishes) {
       const ingredientCount = faker.number.int({ min: 3, max: 6 });
       const usedProducts = new Set<number>();
 
       for (let i = 0; i < ingredientCount; i++) {
-        // Wybierz losowy produkt (nie powtarzając w ramach tego samego dania)
         let product: Product;
         let attempts = 0;
         do {
@@ -42,7 +39,7 @@ export default class IngredientSeeder implements Seeder {
           attempts++;
         } while (usedProducts.has(product.id) && attempts < 10);
 
-        if (attempts >= 10) break; // Zabezpieczenie przed nieskończoną pętlą
+        if (attempts >= 10) break;
 
         usedProducts.add(product.id);
 
